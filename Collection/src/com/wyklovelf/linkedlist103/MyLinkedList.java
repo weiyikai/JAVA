@@ -21,6 +21,35 @@ public class MyLinkedList{//这里只是简单的重写List接口中的主要方法，并不规范哦。
 		return size;
 	}
 	
+	
+	/**
+	 * 根据index索引遍历链表(二分法)
+	 * @return
+	 */
+	public Node node(int index) {
+		Node temp = null;
+		
+		if(null != first) {
+			if(index < this.size >> 2) {
+				
+				temp = first;
+				
+				for (int i = 0; i < index; i++) {
+					temp = temp.next;
+				}
+			}else {
+				
+				temp = this.last;
+				
+				for (int i = this.size - 1; i > index ; i--) {
+					temp = temp.pervious;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * add方法，在列表尾巴上加节点（！=插入）
 	 * @param obj
@@ -119,13 +148,19 @@ public class MyLinkedList{//这里只是简单的重写List接口中的主要方法，并不规范哦。
 			for (int i = 0; i < index; i++) {//找到要删除的节点的位置
 				temp = temp.next;
 			}
-			
-			if(null == temp.next) {//如果要删除的节点是尾节点
+			                        
+			if(first != temp && null == temp.next) {//如果要删除的节点是尾节点,是尾节点的理解：就是当前节点不是头节点,并且它的next属性为空
 				temp.pervious.next = null;
-			}else {
+				last = temp.pervious;
+			}else if(first == temp && null == temp.next){//当前列表只有一个节点，即头节点就是要删除的当前节点
+				first = null;
+			}else if(first == temp && null != temp.next) {//要删除的当前节点是头节点，而且此列表中不止这一个头节点
+				temp.next.pervious = null;
+				first = temp.next;
+			}else if(first != temp && null != temp.next) {//当前节点既不是头节点，也不是尾节点
 				temp.pervious.next = temp.next;
-				
-				temp.next.pervious = temp.pervious;
+				 
+				temp.next.pervious = temp.pervious;  
 			}
 			
 			size--;
@@ -133,12 +168,65 @@ public class MyLinkedList{//这里只是简单的重写List接口中的主要方法，并不规范哦。
 	}
 	
 	/**
-	 * insert方法分为
+	 * 重载add方法,在下表为index的元素之前插入属性为obj的元素,这里的插入只允许插在index处元素的前面
 	 * @param index
 	 * @param obj
 	 */
-	public void insert(int index,Object obj) {
-		LinkedList tp = new LinkedList();
+	public void add(int index,Object obj) {
+//		LinkedList tp = new LinkedList();
+		if(index < 0 || index >= size) {
+			try {
+				throw new Exception();
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
+		
+		Node n = new Node();
+		
+		n.obj = obj;
+		
+		//LinkedList不需要扩容
+		if(null == first) {
+			
+			n.pervious = null;
+			
+			n.next = null;
+			
+			first = n;
+			
+			last = n;
+		}else {
+			Node temp = new Node();
+			
+			temp = first;
+			
+			for (int i = 0; i < index; i++) {//找到要删除的节点的位置
+				temp = temp.next;
+			}
+			
+			if(first == temp) {//如果要在头节点前插入一个节点
+				temp.pervious = n;
+				
+				n.next = temp;
+				
+				n.pervious = null;
+				
+				first = n;
+		
+			}else {
+				temp.pervious.next = n;
+				
+				n.pervious = temp.pervious;
+				
+				n.next = temp;
+				
+				temp.pervious = n;
+			
+			}
+			size++;
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -162,8 +250,10 @@ public class MyLinkedList{//这里只是简单的重写List接口中的主要方法，并不规范哦。
 		
 		System.out.println(list.get(3));
 		
-		list.remove(3);
+		list.add(3,"DDD");
 		
-		System.out.println(list.size());
+//		list.remove(3);
+		
+//		System.out.println(list.size());
 	}
 }
